@@ -1,7 +1,9 @@
 # CPE 315 Lab 2 Towers of Hanoi
 Towers of Hanoi
 
-Add your name and project status here.
+Shosei Anegawa and James Rounthwaite
+
+Lab Status: Complete
 
 The ``towers.s`` file is what you will modifiy. There are comments
 to guide your implementation.
