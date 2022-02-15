@@ -1,7 +1,7 @@
 	.arch armv8-a
 	.text
 
-@ print function is complete, no modifications needed
+// print function is complete, no modifications needed
     .global	print
 print:
       stp    x29, x30, [sp, -16]! //Store FP, LR.
@@ -20,27 +20,60 @@ startstring:
     .global	towers
 towers:
    /* Save calllee-saved registers to stack */
-   
+    stp    x29, x30, [sp, -64]!
+    add    x29, sp, 0
+    stp    x19, x20, [sp, 16]
+    stp    x21, x22, [sp, 32]
+    str    x23, [sp, 48]  /* x23 used for steps */
+    /* Save a copy of all 3 input parameters onto the stack */
+    
+    
    /* Save a copy of all 3 incoming parameters to callee-saved registers */
-
+    mov    x19, x0 /* NumOfDisks */
+    mov    x20, x1 /* Start */
+    mov    x21, x2 /* Goal */
 if:
    /* Compare numDisks with 2 or (numDisks - 2)*/
    /* Check if less than, else branch to else */
-   
+    cmp   x19, 2
+    B.ge  else
    /* set print function's start to incoming start */
    /* set print function's end to goal */
+    mov   x0, x20
+    mov   x1, x21
    /* call print function */
-   /* Set return register to 1 */
+    bl    print
+  /* Set return register to 1 */
    /* branch to endif */
+    mov   x0, #1
+    b     endif
 else:
-   /* Use a callee-saved varable for temp and set it to 6 */
-   /* Subract start from temp and store to itself */
-   /* Subtract goal from temp and store to itself (temp = 6 - start - goal)*/
+/*calculate peg */
+    mov   x9, #6      /* Use the 0 to load -6 into x9 */
+    sub   x22, x9, x1   /* Calcualte peg */
+    sub   x22, x22, x2    /* x22 stores peg */
 
    /* subtract 1 from original numDisks and store it to numDisks parameter */
+    sub   x0, x19, 1
+    mov   x1, x20
+    mov   x2, x22
+    /* Call towers function */
+    bl    towers
+    
+    mov   x23, x0
 
+    mov   x0, #1
+    mov   x1, x20
+    mov   x2, x21
+    bl    towers
+    add   x23, x23, x0
+
+    sub   x0, x19, 1
+    mov   x1, x22
+    mov   x2, x21
+    bl    towers
+    add   x0, x23, x0
    /* Set end parameter as temp */
-   /* Call towers function */
    /* Save result to callee-saved register for total steps */
    /* Set numDiscs parameter to 1 */
    /* Set start parameter to original start */
@@ -56,9 +89,15 @@ else:
 
 endif:
    /* Restore Registers */
-   /* Return from towers function */
+    ldp    x19, x20, [sp, 16]
+    ldp    x21, x22, [sp, 32]
+    ldr    x23, [sp, 48]
+    ldp    x29, x30, [sp], 64
 
-@ Function main is complete, no modifications needed
+   /* Return from towers function */
+    ret
+
+// Function main is complete, no modifications needed
     .global	main
 main:
       stp    x29, x30, [sp, -32]!
